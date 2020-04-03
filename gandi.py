@@ -1,4 +1,5 @@
 import logging
+import json
 
 import requests
 
@@ -25,7 +26,13 @@ class GandiAPIClient:
 
     def _request(self, method, url, headers={}, params={}, *args, **kwargs):
         self.logger.debug(
-            "Requesting %s: %s, headers=%r, params=%r, args=%r, kwargs=%r", method, url, headers, params, args, kwargs
+            "Requesting %s: %s, headers=%r, params=%r, args=%r, kwargs=%r",
+            method,
+            url,
+            headers,
+            params,
+            args,
+            kwargs,
         )
 
         headers.update({"Authorization": "Apikey  %s" % self.api_key})
@@ -265,6 +272,7 @@ class Record(APIElement):
         rrset_name="",
         rrset_type=None,
         rrset_values=None,
+        rrset_ttl=10800,
         **kwargs
     ):
         endpoint = self.ENDPOINT.format(
@@ -274,6 +282,7 @@ class Record(APIElement):
         self.rrset_name = rrset_name
         self.rrset_type = rrset_type
         self.rrset_values = rrset_values
+        self.rrset_ttl = rrset_ttl
         if self.rrset_values is None or self.rrset_type is None:
             self.fetch()
 
@@ -286,23 +295,24 @@ class Record(APIElement):
             "rrset_name": self.rrset_name,
             "rrset_type": self.rrset_type,
             "rrset_values": self.rrset_values,
+            "rrset_ttl": self.rrset_ttl,
         }
 
     def as_api(self):
-        return {
-            "rrset_values": self.rrset_values
-        }
+        return {"rrset_values": self.rrset_values, "rrset_ttl": self.rrset_ttl}
 
     def from_dict(self, d):
         self.rrset_name = d["rrset_name"]
         self.rrset_type = d["rrset_type"]
         self.rrset_values = d["rrset_values"]
+        self.rrset_ttl = d.get("rrset_ttl", 10800)
 
     def __repr__(self):
-        return "<Record name=%s, type=%s, values=%r>" % (
+        return "<Record name=%s, type=%s, values=%r, ttl=%s>" % (
             self.rrset_name,
             self.rrset_type,
             self.rrset_values,
+            self.rrset_ttl,
         )
 
     def __eq__(self, other):
@@ -310,6 +320,7 @@ class Record(APIElement):
             self.rrset_name == other.rrset_name
             and self.rrset_type == other.rrset_type
             and self.rrset_values == other.rrset_values
+            and self.rrset_ttl == other.rrset_ttl
         )
 
     def __hash__(self):
@@ -334,7 +345,7 @@ class DomainsRecords(APIElement):
             r.save()
 
     def from_dict(self, d):
-        # it's actually an array
+        # l is actually an array
         if isinstance(d, dict):
             l = d["records"]
         else:
