@@ -1,0 +1,16 @@
+[Re2o]
+hostname = "re2o.example.net"
+username = "server"
+password = "plopiplop"
+use_TLS = false
+[Gandi]
+# Default API key
+API_KEY = "thisissecret"
+
+# Zones are specified like this. names shouldn't begin with '.' as in re2o.
+[Gandi.zone."some.domain.tld"]
+# uses the default API_KEY
+
+[Gandi.zone."another.domain.tld"]
+# uses its own API_KEY
+API_KEY = "THIS IS SECRET"

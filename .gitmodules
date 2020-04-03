@@ -1,0 +1,3 @@
+[submodule "re2oapi"]
+	path = re2oapi
+	url = https://gitlab.federez.net/re2o/re2oapi
