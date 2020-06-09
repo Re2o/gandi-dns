@@ -12,4 +12,3 @@ iso8601 = "*"
 click = "*"
 
 [requires]
-python_version = "3.6"
