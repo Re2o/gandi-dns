@@ -2,6 +2,7 @@ import logging
 import logging.config
 import pathlib
 import traceback
+import socket
 
 import click
 import toml
@@ -11,6 +12,7 @@ from re2oapi import Re2oAPIClient
 from gandi import GandiAPIClient, DomainsRecords, Record
 
 RUN_PATH = pathlib.Path(__file__).parent
+CLIENT_HOSTNAME = socket.gethostname().split('.', 1)[0]
 
 
 @click.command()
@@ -174,7 +176,7 @@ def main(config_dir, dry_run, keep):
     if not keep and not dry_run:
         for service in re2o_client.list("services/regen/"):
             if (
-                service["hostname"] == client_hostname
+                service["hostname"] == CLIENT_HOSTNAME
                 and service["service_name"] == "dns"
                 and service["need_regen"]
             ):
